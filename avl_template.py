@@ -210,6 +210,7 @@ class AVLTree(object):
 
     def __init__(self):
         self.root = AVLNode()
+        self.tree_size = 0
 
     # add your fields here
 
@@ -249,6 +250,7 @@ class AVLTree(object):
     """
 
     def insert(self, key, val):
+        self.tree_size += 1
         node = self.insertBST(key, val)
         parent = node.get_parent()
         cnt_gilgul = 0
@@ -324,7 +326,6 @@ class AVLTree(object):
         node.set_parent(left_son)
         node.set_height(self.calcHeight(node))
         left_son.set_height(self.calcHeight(left_son))
-        self.root.display()
         return 1
 
     def gilgulLeft(self, node):
@@ -343,10 +344,10 @@ class AVLTree(object):
         node.set_parent(right_son)
         node.set_height(self.calcHeight(node))
         right_son.set_height(self.calcHeight(right_son))
-        self.root.display()
         return 1
 
     def delete(self, node):
+        self.tree_size -= 1
         cnt_gilgul = 0
         parent = self.BSTdelete(node)
         while parent is not None:
@@ -442,7 +443,16 @@ class AVLTree(object):
     """
 
     def avl_to_array(self):
-        return None
+        arr = [0 for i in range(self.tree_size)]
+        node = self.minSubTree(self.root)
+        i = 0
+        while node is not None:
+            arr[i] = (node.get_key(), node.get_value())
+            i += 1
+            node = self.succesor(node)
+        if i != len(arr):
+            arr = arr[:i]
+        return arr
 
     """returns the number of items in dictionary 
 
@@ -451,7 +461,7 @@ class AVLTree(object):
     """
 
     def size(self):
-        return -1
+        return self.tree_size
 
     """splits the dictionary at the i'th index
 
@@ -465,7 +475,37 @@ class AVLTree(object):
     """
 
     def split(self, node):
-        return None
+        key = node.get_key()
+        left = AVLTree()
+        left.root = node.get_left()
+        left.root.set_parent(None)
+        right = AVLTree()
+        right.root = node.get_right()
+        right.root.set_parent(None)
+        parent = node.get_parent()
+        node.set_parent(None)
+        node.set_left(None)
+        node.set_right(None)
+        while parent is not None:
+            next = parent.get_parent()
+            if parent.get_key() < key:
+                parent_left = AVLTree()
+                parent_left.root = parent.get_left()
+                parent_left.joinWithNode(parent, left)
+                parent_left.root.display()
+                left = parent_left
+                left.root.display()
+            else:
+                parent_right = AVLTree()
+                parent_right.root = parent.get_right()
+                right.joinWithNode(parent, parent_right)
+                right.root.display()
+            parent = next
+            left.root.set_parent(None)
+            right.root.set_parent(None)
+        return left, right
+
+
 
     """joins self with key and another AVLTree
 
@@ -481,7 +521,66 @@ class AVLTree(object):
     """
 
     def join(self, tree2, key, val):
-        return None
+        node = AVLNode(key,val)
+        if tree2.root.get_key() > key:
+            return self.joinWithNode(node, tree2)
+        diff = tree2.joinWithNode(node, self)
+        self.root = tree2.get_root()
+        self.tree_size = tree2.size()
+        return diff
+
+    def joinWithNode(self, node, tree2):
+        smaller = self.get_root()
+        bigger = tree2.get_root()
+        diff = abs(smaller.get_height() - bigger.get_height()) + 1
+        if smaller.get_height() <= bigger.get_height():
+            h = smaller.get_height()
+            curr = bigger
+            while curr.get_height() > h:
+                curr = curr.get_left()
+            node.set_left(smaller)
+            node.set_right(curr)
+            node.set_parent(curr.get_parent())
+            smaller.set_parent(node)
+            curr.set_parent(node)
+            if node.get_parent() is not None:
+                node.get_parent().set_left(node)
+                self.root = bigger
+            else:
+                self.root = node
+        else:
+            h = bigger.get_height()
+            curr = smaller
+            while curr.get_height() > h:
+                curr = curr.get_right()
+            node.set_right(bigger)
+            node.set_left(curr)
+            node.set_parent(curr.get_parent())
+            bigger.set_parent(node)
+            curr.set_parent(node)
+            if node.get_parent() is not None:
+                node.get_parent().set_right(node)
+                self.root = smaller
+            else:
+                self.root = node
+        self.root.set_parent(None)
+        node.set_height(h+1)
+        parent = node.get_parent()
+        self.tree_size += tree2.tree_size + 1
+        while parent is not None:
+            parent_height = self.calcHeight(parent)
+            parent_bf = self.bf(parent)
+            if parent_height == parent.get_height() and abs(parent_bf) < 2:
+                return diff
+            elif abs(parent_bf) < 2:
+                parent.set_height(parent_height)
+                parent = parent.get_parent()
+            else:
+                self.gilgul(parent, parent_bf)
+                return diff
+        return diff
+
+    # return root of joined tree
 
     """returns the root of the tree representing the dictionary
 
@@ -490,30 +589,28 @@ class AVLTree(object):
     """
 
     def get_root(self):
-        return None
+        return self.root
 
 
 def test():
     tree = AVLTree()
     tree.insert(8, "a")
-    tree.root.display()
     tree.insert(4, "b")
-    tree.root.display()
     tree.insert(5, "c")
-    tree.root.display()
     tree.insert(10, "d")
-    tree.root.display()
     tree.insert(9, "e")
-    tree.root.display()
     tree.insert(12, "4")
     tree.insert(11, "e")
-    tree.root.display()
-    tree.insert(13, "e")
-    tree.root.display()
 
-    print(tree.delete(tree.search(9)))
-    print(tree.root.height)
+
+    tree2 = AVLTree()
+    tree2.insert(15, "a")
+    tree2.insert(17, "b")
+    tree.join(tree2, 13, "")
     tree.root.display()
+    t1, t2= tree.split(tree.search(10))
+    t1.root.display()
+    t2.root.display()
 
 
 test()
