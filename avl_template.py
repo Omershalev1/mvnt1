@@ -492,14 +492,11 @@ class AVLTree(object):
                 parent_left = AVLTree()
                 parent_left.root = parent.get_left()
                 parent_left.joinWithNode(parent, left)
-                parent_left.root.display()
                 left = parent_left
-                left.root.display()
             else:
                 parent_right = AVLTree()
                 parent_right.root = parent.get_right()
                 right.joinWithNode(parent, parent_right)
-                right.root.display()
             parent = next
             left.root.set_parent(None)
             right.root.set_parent(None)
@@ -533,7 +530,7 @@ class AVLTree(object):
         smaller = self.get_root()
         bigger = tree2.get_root()
         diff = abs(smaller.get_height() - bigger.get_height()) + 1
-        if smaller.get_height() <= bigger.get_height():
+        if smaller.get_height() < bigger.get_height():
             h = smaller.get_height()
             curr = bigger
             while curr.get_height() > h:
@@ -548,6 +545,13 @@ class AVLTree(object):
                 self.root = bigger
             else:
                 self.root = node
+        elif smaller.get_height() == bigger.get_height():
+            h = smaller.get_height()
+            node.set_left(smaller)
+            node.set_right(bigger)
+            smaller.set_parent(node)
+            bigger.set_parent(node)
+            self.root = node
         else:
             h = bigger.get_height()
             curr = smaller
@@ -602,15 +606,20 @@ def test():
     tree.insert(12, "4")
     tree.insert(11, "e")
 
-
+    tree.root.display()
     tree2 = AVLTree()
     tree2.insert(15, "a")
     tree2.insert(17, "b")
+    #tree2.insert(20, "b")
+    #tree2.insert(22, "b")
+    #tree2.insert(25, "b")
+    tree2.root.display()
     tree.join(tree2, 13, "")
     tree.root.display()
     t1, t2= tree.split(tree.search(10))
     t1.root.display()
     t2.root.display()
+    print(t2.root.parent)
 
 
 test()
