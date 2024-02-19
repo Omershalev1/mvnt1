@@ -5,8 +5,8 @@
 # name2    - omer shalev
 
 """A class represnting a node in an AVL tree"""
-
-
+# import random  #for tests
+ 
 class AVLNode(object):
     """Constructor, you are allowed to add more fields.
 
@@ -23,56 +23,6 @@ class AVLNode(object):
         self.right = None
         self.parent = None
         self.height = -1
-
-    def display(self):
-        lines, *_ = self._display_aux()
-        for line in lines:
-            print(line)
-
-    def _display_aux(self):
-        """Returns list of strings, width, height, and horizontal coordinate of the root."""
-        # No child.
-        if self.right is None and self.left is None:
-            line = '%s' % self.key + " " + str(self.parent.key) if self.parent is not None else '%s' % self.key
-            width = len(line)
-            height = 1
-            middle = width // 2
-            return [line], width, height, middle
-
-        # Only left child.
-        if self.right is None:
-            lines, n, p, x = self.left._display_aux()
-            s = '%s' % self.key + " " + str(self.parent.key) if self.parent is not None else '%s' % self.key
-            u = len(s)
-            first_line = (x + 1) * ' ' + (n - x - 1) * '_' + s
-            second_line = x * ' ' + '/' + (n - x - 1 + u) * ' '
-            shifted_lines = [line + u * ' ' for line in lines]
-            return [first_line, second_line] + shifted_lines, n + u, p + 2, n + u // 2
-
-        # Only right child.
-        if self.left is None:
-            lines, n, p, x = self.right._display_aux()
-            s = '%s' % self.key + " " + str(self.parent.key) if self.parent is not None else '%s' % self.key
-            u = len(s)
-            first_line = s + x * '_' + (n - x) * ' '
-            second_line = (u + x) * ' ' + '\\' + (n - x - 1) * ' '
-            shifted_lines = [u * ' ' + line for line in lines]
-            return [first_line, second_line] + shifted_lines, n + u, p + 2, u // 2
-
-        # Two children.
-        left, n, p, x = self.left._display_aux()
-        right, m, q, y = self.right._display_aux()
-        s = '%s' % self.key + " " + str(self.parent.key) if self.parent is not None else '%s' % self.key
-        u = len(s)
-        first_line = (x + 1) * ' ' + (n - x - 1) * '_' + s + y * '_' + (m - y) * ' '
-        second_line = x * ' ' + '/' + (n - x - 1 + u + y) * ' ' + '\\' + (m - y - 1) * ' '
-        if p < q:
-            left += [n * ' '] * (q - p)
-        elif q < p:
-            right += [m * ' '] * (p - q)
-        zipped_lines = zip(left, right)
-        lines = [first_line, second_line] + [a + u * ' ' + b for a, b in zipped_lines]
-        return lines, n + m + u, max(p, q) + 2, n + u // 2
 
     """returns the left child
     @rtype: AVLNode
@@ -316,7 +266,7 @@ class AVLTree(object):
     """
 
     def gilgul(self, node, node_bf):
-        #making rotations to fix problematic nodes with big BF. maximum rotations number is 2, time complexity O(n)
+        #making rotations to fix problematic nodes with big BF. maximum rotations number is 2, time complexity O(1)
         cnt = 0
         if node_bf == 2:
             left_son = node.get_left()
@@ -399,6 +349,12 @@ class AVLTree(object):
         #find the minimum key in the sub tree where node is the root. Time complexity O(h) = O(logn)
         while node.get_left().is_real_node():
             node = node.get_left()
+        return node
+    
+    def maxSubTree(self, node):
+        #find the maximum key in the sub tree where node is the root. time complexity O(h) = O(logn)
+        while node.get_right().is_real_node():
+            node = node.get_right()
         return node
 
     def succesor(self, node):
@@ -678,34 +634,22 @@ class AVLTree(object):
         return self.root if self.root.is_real_node() else None
     
 
-def test():
-    tree = AVLTree()
-    print(tree.insert(8, "a"))
-    print(tree.insert(4, "b"))
-    print(tree.insert(5, "c"))
-    tree.insert(10, "d")
-    tree.insert(9, "e")
-    tree.insert(12, "4")
-    tree.insert(11, "e")
-
-    tree.root.display()
-    tree2 = AVLTree()
-    print(tree.root.get_height())
-    # print(tree2.root.height)
-    # tree2.insert(15, "a")
-    # tree2.insert(17, "b")
-    # tree2.insert(20, "b")
-    # tree2.insert(22, "b")
-    # tree2.insert(25, "b")
-    tree2.root.display()
-    print(tree2.join(tree, 13, ""))
-    tree2.root.display()
-    tree2.delete(tree2.search(11))
-    tree2.root.display()
-    print(tree2.search(9).get_height())
-    # t1, t2= tree.split(tree.search(9))
-    # t1.root.display()
-    # t2.root.display()
-    # print(tree.root.parent)
-
-test()
+# def test():
+#     treeArr = [None for i in range(10)]
+#     treeArr2 = [None for i in range(10)]
+#     for j in range(1,11):
+#         tree = AVLTree()
+#         tree2 = AVLTree()
+#         keys = [i for i in range(1000*(2**j))]
+#         for key in keys:
+#             tree.insert(key,key)
+#             tree2.insert(key,key)
+#         treeArr[j-1] = tree
+#         treeArr2[j-1] = tree2
+#         print("tree added")
+#     for tree in treeArr:
+#         # node = tree.maxSubTree(tree.root.get_left())
+#         num = random.randint(0,tree.size()-1)
+#         node = tree.search(num)
+#         tree.split(node)
+#         print("")
