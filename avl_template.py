@@ -6,7 +6,7 @@
 
 """A class represnting a node in an AVL tree"""
 # import random  #for tests
- 
+
 class AVLNode(object):
     """Constructor, you are allowed to add more fields.
 
@@ -350,7 +350,7 @@ class AVLTree(object):
         while node.get_left().is_real_node():
             node = node.get_left()
         return node
-    
+
     def maxSubTree(self, node):
         #find the maximum key in the sub tree where node is the root. time complexity O(h) = O(logn)
         while node.get_right().is_real_node():
@@ -374,7 +374,7 @@ class AVLTree(object):
         #deleting a node from the tree.
         #changes a fixed amount of pointers, calling the function succesor which is O(logn)
         #time complexity O(logn)
-        
+
         #the node has two real sons.
         if node.get_left().is_real_node() and node.get_right().is_real_node():
             suc = self.succesor(node)
@@ -410,7 +410,7 @@ class AVLTree(object):
         parent = node.get_parent()
         #only has right child or no childs
         if not left:
-            #the node is the root of a tree 
+            #the node is the root of a tree
             if parent is None:
                 self.root = node.get_right()
                 node.get_right().set_parent(None)
@@ -553,6 +553,7 @@ class AVLTree(object):
         self.root = tree2.get_root()
         self.tree_size = tree2.size()
         tree2.root = AVLNode()
+        tree2.tree_size = 0
         return diff
 
     def joinWithNode(self, node, tree2):
@@ -561,7 +562,7 @@ class AVLTree(object):
         #Joining the two subtrees with the same heights by changing pointers. O(1)
         #going up the joined tree and fix nodes if needed. O(diff)
         #time complexity O(diff) = O(abs(smaller.get_height() - bigger.get_height()) + 1)
-        
+
         smaller = self.root
         bigger = tree2.root
         diff = abs(smaller.get_height() - bigger.get_height()) + 1
@@ -634,7 +635,7 @@ class AVLTree(object):
     def get_root(self):
         #time complexity O(1)
         return self.root if self.root.is_real_node() else None
-    
+
 
 # def test():
 #     treeArr = [None for i in range(10)]
