@@ -523,6 +523,8 @@ class AVLTree(object):
             parent = next
             left.root.set_parent(None)
             right.root.set_parent(None)
+        left.tree_size = self.size()
+        right.tree_size = self.size()
         return left, right
 
 
