@@ -552,7 +552,7 @@ class AVLTree(object):
         diff = tree2.joinWithNode(node, self)
         self.root = tree2.get_root()
         self.tree_size = tree2.size()
-        tree2.root = None
+        tree2.root = AVLNode()
         return diff
 
     def joinWithNode(self, node, tree2):
