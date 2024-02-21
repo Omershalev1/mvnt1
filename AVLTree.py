@@ -347,12 +347,14 @@ class AVLTree(object):
 
     def minSubTree(self, node):
         #find the minimum key in the sub tree where node is the root. Time complexity O(h) = O(logn)
+        if not node.is_real_node(): return None
         while node.get_left().is_real_node():
             node = node.get_left()
         return node
 
     def maxSubTree(self, node):
         #find the maximum key in the sub tree where node is the root. time complexity O(h) = O(logn)
+        if not node.is_real_node(): return None
         while node.get_right().is_real_node():
             node = node.get_right()
         return node
@@ -462,6 +464,8 @@ class AVLTree(object):
         #calling minSubTree to find the minimum key in the tree O(logn)
         #calling successor for each node until going through all the nodes. As seen in class O(n+h) = O(n+logn)
         #time complexity O(n)
+        if not self.root.is_real_node():
+            return []
         arr = [0 for i in range(self.tree_size)]
         node = self.minSubTree(self.root)
         i = 0
@@ -635,24 +639,4 @@ class AVLTree(object):
     def get_root(self):
         #time complexity O(1)
         return self.root if self.root.is_real_node() else None
-
-
-# def test():
-#     treeArr = [None for i in range(10)]
-#     treeArr2 = [None for i in range(10)]
-#     for j in range(1,11):
-#         tree = AVLTree()
-#         tree2 = AVLTree()
-#         keys = [i for i in range(1000*(2**j))]
-#         for key in keys:
-#             tree.insert(key,key)
-#             tree2.insert(key,key)
-#         treeArr[j-1] = tree
-#         treeArr2[j-1] = tree2
-#         print("tree added")
-#     for tree in treeArr:
-#         # node = tree.maxSubTree(tree.root.get_left())
-#         num = random.randint(0,tree.size()-1)
-#         node = tree.search(num)
-#         tree.split(node)
-#         print("")
+    
